@@ -5,7 +5,7 @@ class NEAT:
     nets = []
     genome_list = []
 
-    def __init__(self, config_file, restore_checkpoint=0):
+    def __init__(self, config_file, checkpoint_interval=10, restore_checkpoint=0):
         self.stats = None
         self.config = neat.config.Config(
             neat.DefaultGenome,
@@ -17,7 +17,8 @@ class NEAT:
         self.population = None
         self.fitness_threshold = self.config.__getattribute__('fitness_threshold')
         self.restore_checkpoint = restore_checkpoint
-        self.save_checkpoint_interval = None
+        self.save_checkpoint_interval = checkpoint_interval
+        self.population_statistics()
 
     def population_statistics(self):
         # Create the population, which is the top-level object for a NEAT run.

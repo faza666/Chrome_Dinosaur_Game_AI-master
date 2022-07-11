@@ -10,8 +10,6 @@ class GameHandler:
         self.high_score = 0
         self.high_score_generation = 0
 
-        self.training_mode = True
-
     def show_statistics(self, neat_obj, game):
         if game.points > self.high_score:
             self.high_score_generation = neat_obj.population.generation

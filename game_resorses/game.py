@@ -7,7 +7,7 @@ from .obstacles import SmallCactus, LargeCactus, Bird
 
 
 class GameMechanics:
-    def __init__(self):
+    def __init__(self, neat_object, game_handler):
         self.game_speed = 14
         self.x_pos_bg = 0
         self.y_pos_bg = 380
@@ -21,7 +21,10 @@ class GameMechanics:
         self.passed_bird = False
         self.passed_cactus = False
 
-    def main_loop(self, neat_object, game_handler):
+        self.neat_object = neat_object
+        self.game_handler = game_handler
+
+    def main_loop(self):
         clock = pygame.time.Clock()
         fps = 30
         cloud = Cloud()
@@ -98,7 +101,7 @@ class GameMechanics:
                     if dinosaur.passed_obstacle(obstacle):
                         NEAT.genome_list[i].fitness += self.add_fitness(dinosaur, obstacle)
 
-                    if NEAT.genome_list[i].fitness == neat_object.fitness_threshold:
+                    if NEAT.genome_list[i].fitness == self.neat_object.fitness_threshold:
                         run_game = False
 
                     # If collision or jump over Bird:
@@ -109,7 +112,7 @@ class GameMechanics:
                                     dinosaur.x_pos >= obstacle.rect.x
                             ):
                         self.dinosaurs.pop(i)
-                        neat_object.nets.pop(i)
+                        self.neat_object.nets.pop(i)
                         NEAT.genome_list.pop(i)
 
             if len(self.dinosaurs) == 0:
@@ -120,7 +123,7 @@ class GameMechanics:
             cloud.update(self)
             self.background()
             self.game_statistics()
-            game_handler.show_statistics(neat_object, self)
+            self.game_handler.show_statistics(self.neat_object, self)
 
             pygame.display.update()
 

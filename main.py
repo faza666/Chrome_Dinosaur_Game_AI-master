@@ -9,28 +9,15 @@ from neat_AI.neat_ import NEAT
 from neat_AI import visualize
 
 
-# Generate genomes
-def eval_genomes(genomes, config):
-    game = GameMechanics()
-    # (genome_id, genome_object)
-    for _, genome_object in genomes:
-        net = neat.nn.FeedForwardNetwork.create(genome_object, config)
-        NEAT.nets.append(net)
-        game.dinosaurs.append(Dinosaur())
-        genome_object.fitness = 0
-        NEAT.genome_list.append(genome_object)
-    game.main_loop(neat_object, game_handler)
-
-
 # Restore the winner dinosaur
-def run_super_dinosaur(genome, config):
-    game = GameMechanics()
+def run_super_dinosaur(genome, config, neat_object, game_handler):
+    game = GameMechanics(neat_object, game_handler)
     net = neat.nn.FeedForwardNetwork.create(genome, config)
     NEAT.nets.append(net)
     game.dinosaurs.append(Dinosaur())
     genome.fitness = 0
     NEAT.genome_list.append(genome)
-    game.main_loop(neat_object, game_handler)
+    game.main_loop()
 
 
 # Receives a genome and draws a neural network with arbitrary topology
@@ -48,25 +35,41 @@ def draw_net(config, winner):
     visualize.draw_net(config, winner, True, node_names=node_names)
 
 
-def run_training_mode(config):
+def run_training_mode(neat_object, game_handler, home_directory):
+
+    # Generate genomes
+    def eval_genomes(genomes, config):
+        # Initialize game object
+        game = GameMechanics(neat_object, game_handler)
+
+        # (genome_id, genome_object)
+        for _, genome_object in genomes:
+            net = neat.nn.FeedForwardNetwork.create(genome_object, config)
+            NEAT.nets.append(net)
+            game.dinosaurs.append(Dinosaur())
+            genome_object.fitness = 0
+            NEAT.genome_list.append(genome_object)
+
+        # Run game
+        game.main_loop()
 
     # Run generations until 'fitness_threshold' will be reached.
     # Put number of generations to run as second argument
     winner = neat_object.population.run(eval_genomes)
 
     # Save the winner genome description as text
-    with open(os.path.join(local_directory, 'winner_genome', 'winner.pkl'), 'w') as file:
+    with open(os.path.join(home_directory, 'winner_genome', 'winner.pkl'), 'w') as file:
         file.write(str(winner))
 
     # Save the winner genome object to use it later
-    with open(os.path.join(local_directory, 'winner_genome', 'winner.pkl'), 'wb') as file:
+    with open(os.path.join(home_directory, 'winner_genome', 'winner.pkl'), 'wb') as file:
         pickle.dump(winner, file)
 
     # Display the winning genome.
     print(f'\nBest genome:\n{winner}')
 
     # Receives a genome and draws a neural network with arbitrary topology
-    draw_net(config, winner)
+    draw_net(neat_object.config, winner)
 
     # Plots the population's average and best fitness
     visualize.plot_stats(neat_object.stats, ylog=False, view=True)
@@ -75,20 +78,20 @@ def run_training_mode(config):
     visualize.plot_species(neat_object.stats, view=True)
 
 
-def run_winner_model(config):
+def run_winner_model(neat_object, game_handler, home_directory):
     # Read the winner genome from file
-    with open(os.path.join(local_directory, 'winner_genome', 'winner.pkl'), "rb") as file:
+    with open(os.path.join(home_directory, 'winner_genome', 'winner.pkl'), "rb") as file:
         winner = pickle.load(file)
 
     # Receives a genome and draws a neural network with arbitrary topology
-    draw_net(config, winner)
+    draw_net(neat_object.config, winner)
 
     # Run winner genome
     # Having fun!!! )))
-    run_super_dinosaur(winner, config)
+    run_super_dinosaur(winner, neat_object.config, neat_object, game_handler)
 
 
-if __name__ == '__main__':
+def main_menu(training_mode, checkpoint_interval, restore_checkpoint):
     # Initializing pygame object
     pygame.init()
 
@@ -96,33 +99,45 @@ if __name__ == '__main__':
     # to store all the data between games
     game_handler = GameHandler()
 
-    # To run the script in model training mode - leave as it is
-    # To run the script in use model mode:
-    #   set "game_handler.training_mode" parameter to False
-    game_handler.training_mode = True
-
     # Full name of the config file
-    local_directory = os.path.dirname(__file__)
-    config_file = os.path.join(local_directory, 'neat_AI', 'config.txt')
+    home_directory = os.path.dirname(__file__)
+    config_file = os.path.join(home_directory, 'neat_AI', 'config.txt')
 
-    # Initializing the NEAT object
-    neat_object = NEAT(config_file)
+    if training_mode:
+        # Initializing the NEAT object
+        neat_object = NEAT(
+            config_file=config_file,
+            checkpoint_interval=checkpoint_interval,
+            restore_checkpoint=restore_checkpoint
+        )
 
-    # Start reporting tools
-    neat_object.population_statistics()
-
-    if game_handler.training_mode:
         # If training model mode:
-        run_training_mode(config=neat_object.config)
-
-        # Save checkpoints in training mode every n generations
-        # to restore from there if needed
-        neat_object.save_checkpoint_interval = 10
-
-        # If you need to restore from checkpoint, just put there a number of it
-        # (works in training mode only)
-        # Zero - start from beginning
-        neat_object.restore_checkpoint = 0
+        run_training_mode(neat_object=neat_object, game_handler=game_handler, home_directory=home_directory)
     else:
+        # Initializing the NEAT object
+        neat_object = NEAT(
+            config_file=config_file,
+            checkpoint_interval=0,
+            restore_checkpoint=0
+        )
         # I use model mode:
-        run_winner_model(config=neat_object.config)
+        run_winner_model(neat_object=neat_object, game_handler=game_handler, home_directory=home_directory)
+
+
+if __name__ == '__main__':
+    # To run the script in model training mode:
+    #   set "script_mode" parameter to True
+    # To run the script in use model mode:
+    #   set "script_mode" parameter to False
+    script_mode = False
+
+    # Save checkpoints in training mode every n generations
+    # to restore from there if needed
+    save_every_n_generations = 10
+
+    # If you need to restore from checkpoint, just put there a number of it
+    # (works in training mode only)
+    # Zero - start from beginning
+    restore_from_generation = 0
+
+    main_menu(script_mode, save_every_n_generations, restore_from_generation)
