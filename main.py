@@ -54,11 +54,11 @@ def run_training_mode(neat_object, game_handler, home_directory):
         game.main_loop()
 
     # Run generations until 'fitness_threshold' will be reached.
-    # Put number of generations to run as second argument
+    # To stop after run some number of generations, put the number as a second argument (int)
     winner = neat_object.population.run(eval_genomes)
 
     # Save the winner genome description as text
-    with open(os.path.join(home_directory, 'winner_genome', 'winner.pkl'), 'w') as file:
+    with open(os.path.join(home_directory, 'winner_genome', 'winner.txt'), 'w') as file:
         file.write(str(winner))
 
     # Save the winner genome object to use it later
@@ -133,11 +133,12 @@ if __name__ == '__main__':
 
     # Save checkpoints in training mode every n generations
     # to restore from there if needed
+    # (works in training mode only)
     save_every_n_generations = 10
 
     # If you need to restore from checkpoint, just put there a number of it
-    # (works in training mode only)
     # Zero - start from beginning
+    # (works in training mode only)
     restore_from_generation = 0
 
     main_menu(script_mode, save_every_n_generations, restore_from_generation)
