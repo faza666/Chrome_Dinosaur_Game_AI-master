@@ -14,6 +14,7 @@ class GameMechanics:
         self.points = 0
         self.font = pygame.font.Font('freesansbold.ttf', 20)
         self.x_pos_bg = 0
+        self.fitness = 0
 
         self.dinosaurs = []
         self.obstacles = []
@@ -33,6 +34,7 @@ class GameMechanics:
         run_game = True
         while run_game:
             clock.tick(fps)
+            current_fitness = []
 
             # Quit if 'QUIT' button is pressed
             for event in pygame.event.get():
@@ -64,11 +66,9 @@ class GameMechanics:
                 output = NEAT.nets[i].activate(
                     # Tuple of input nodes values (see config.txt, parameter 'num_inputs')
                     (
-                        dinosaur.dino_rect.y,
+                        dinosaur.dino_run,
                         self.obstacles[0].rect.x,
-                        self.obstacles[0].rect.top,
-                        self.obstacles[0].rect.bottom,
-                        obstacle_type / 2,
+                        obstacle_type,
                         self.game_speed
                     )
                 )
@@ -100,6 +100,8 @@ class GameMechanics:
                 for i, dinosaur in enumerate(self.dinosaurs):
                     if dinosaur.passed_obstacle(obstacle):
                         NEAT.genome_list[i].fitness += self.add_fitness(dinosaur, obstacle)
+                        current_fitness.append(NEAT.genome_list[i].fitness)
+                        self.fitness = max(current_fitness)
 
                     if NEAT.genome_list[i].fitness == self.neat_object.fitness_threshold:
                         run_game = False
@@ -107,9 +109,9 @@ class GameMechanics:
                     # If collision or jump over Bird:
                     if self.get_collided(dinosaur, obstacle) or \
                             (
-                                    isinstance(obstacle, Bird) and
-                                    dinosaur.dino_rect.y < obstacle.rect.y and
-                                    dinosaur.x_pos >= obstacle.rect.x
+                                isinstance(obstacle, Bird) and
+                                dinosaur.dino_rect.y < obstacle.rect.y and
+                                dinosaur.x_pos >= obstacle.rect.x
                             ):
                         self.dinosaurs.pop(i)
                         self.neat_object.nets.pop(i)
@@ -123,7 +125,7 @@ class GameMechanics:
             cloud.update(self)
             self.background()
             self.game_statistics()
-            self.game_handler.show_statistics(self.neat_object, self)
+            self.game_handler.show_statistics(self.neat_object.population.generation, self.points, self.fitness)
 
             pygame.display.update()
 
