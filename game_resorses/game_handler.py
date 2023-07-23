@@ -9,17 +9,34 @@ class GameHandler:
         self.current_generation = 0
         self.high_score = 0
         self.high_score_generation = 0
+        self.high_fitness = 0
+        self.high_fitness_generation = 0
 
-    def show_statistics(self, neat_obj, game):
-        if game.points > self.high_score:
-            self.high_score_generation = neat_obj.population.generation
-            self.high_score = game.points
+    def show_statistics(self, current_generation, points, fitness):
+        if points > self.high_score:
+            self.high_score_generation = current_generation
+            self.high_score = points
 
-        record_text = self.font.render(f'Record:  {self.high_score}', True, BLACK)
+        if fitness > self.high_fitness:
+            self.high_fitness_generation = current_generation
+            self.high_fitness = fitness
 
-        text_1 = self.font.render(f'Generation:  {neat_obj.population.generation}', True, BLACK)
-        text_2 = self.font.render(f'With generation:  {self.high_score_generation}', True, BLACK)
+        record_score_text = self.font.render(f'Record score:  {self.high_score}', True, BLACK)
+        record_generation_text = self.font.render(f'With generation:  {self.high_score_generation}', True, BLACK)
 
-        SCREEN.blit(text_1, (50, 480))
-        SCREEN.blit(text_2, (300, 70))
-        SCREEN.blit(record_text, (300, 50))
+        current_generation_text = self.font.render(f'Current generation:  {current_generation}', True, BLACK)
+
+        current_fitness_text = self.font.render(f'Current fitness:  {fitness}', True, BLACK)
+        record_fitness_text = self.font.render(f'Record fitness:  {self.high_fitness}', True, BLACK)
+        record_fitness_generation_text = self.font.render(
+            f'With generation:  {self.high_fitness_generation}', True, BLACK
+        )
+
+        SCREEN.blit(record_score_text, (300, 50))
+        SCREEN.blit(record_generation_text, (300, 70))
+
+        SCREEN.blit(current_generation_text, (50, 480))
+
+        SCREEN.blit(current_fitness_text, (1000, 450))
+        SCREEN.blit(record_fitness_text, (1000, 480))
+        SCREEN.blit(record_fitness_generation_text, (1000, 510))
