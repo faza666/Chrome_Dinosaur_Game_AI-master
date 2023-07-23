@@ -1,17 +1,11 @@
-Key: 37100
-Fitness: 200
+Key: 1388
+Fitness: 500
 Nodes:
-	0 DefaultNodeGene(key=0, bias=-1.2899716789059048, response=1.0, activation=sigmoid, aggregation=sum)
-	1 DefaultNodeGene(key=1, bias=2.5032910166411395, response=1.0, activation=sigmoid, aggregation=sum)
-	8503 DefaultNodeGene(key=8503, bias=-1.1704956857195046, response=1.0, activation=sigmoid, aggregation=sum)
-	8531 DefaultNodeGene(key=8531, bias=-2.882908832073002, response=1.0, activation=sigmoid, aggregation=sum)
+	0 DefaultNodeGene(key=0, bias=-1.7122298440041943, response=1.0, activation=sigmoid, aggregation=sum)
+	1 DefaultNodeGene(key=1, bias=2.538734800773128, response=1.0, activation=sigmoid, aggregation=sum)
 Connections:
-	DefaultConnectionGene(key=(-6, 1), weight=2.8712067543972144, enabled=True)
-	DefaultConnectionGene(key=(-5, 0), weight=1.6357807912385027, enabled=True)
-	DefaultConnectionGene(key=(-4, 8531), weight=1.5330027490201348, enabled=True)
-	DefaultConnectionGene(key=(-2, 1), weight=-0.17695032906944425, enabled=True)
-	DefaultConnectionGene(key=(-1, 1), weight=-0.8514923441675971, enabled=False)
-	DefaultConnectionGene(key=(-1, 8503), weight=0.4293160119318309, enabled=True)
-	DefaultConnectionGene(key=(-1, 8531), weight=-0.009136832603067635, enabled=True)
-	DefaultConnectionGene(key=(8503, 1), weight=0.7234224747248479, enabled=True)
-	DefaultConnectionGene(key=(8531, 1), weight=-0.3423790179153335, enabled=True)
+	DefaultConnectionGene(key=(-4, 1), weight=2.4900277988206554, enabled=True)
+	DefaultConnectionGene(key=(-3, 0), weight=1.4777717611645522, enabled=True)
+	DefaultConnectionGene(key=(-3, 1), weight=-4.760612044264883, enabled=False)
+	DefaultConnectionGene(key=(-2, 1), weight=-0.16790158539923472, enabled=True)
+	DefaultConnectionGene(key=(-1, 1), weight=2.2194666373575087, enabled=True)
